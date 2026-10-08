@@ -5,13 +5,14 @@
 ## 구조
 
 - `index.html` 단일 페이지. `frames.json`을 불러와 렌더링 (검색, 주제 필터, 다크 모드)
-- `frames.json` 데이터 원본. `{groups: [...], frames: [{name, desc, date, group}]}`
+- `frames.json` 데이터 원본. `{groups: [...], frames: [{name, desc, detail, date, group}]}`
+  - `desc` 한두 문장 요약, `detail` 맥락 없는 사람도 이해할 수 있는 풀어쓰기(3~6문장)
 
 ## 갱신 방법
 
 새 프레임이 인사이트 로그의 프레임 사전에 등재될 때마다 같이 갱신한다.
 
-1. `frames.json`의 `frames` 배열에 항목 추가 (name, desc, date, group)
+1. `frames.json`의 `frames` 배열에 항목 추가 (name, desc, detail, date, group)
 2. 공개판 규칙을 적용한다: 민감(🔒) 항목 제외, 구성원·외부인 실명 제거(박우범 제외), 내부 전용 주석 제거, 미확정 제품명·코드네임 제거, 막대기(—) 대신 문장 분리
 3. 커밋하면 Vercel이 자동 재배포 (또는 수동 배포)
 
