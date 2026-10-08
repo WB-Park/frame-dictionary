@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>프레임 사전</title>
+<meta name="description" content="박우범(위시켓 CEO)의 사고 프레임 아카이브. 회의와 대화에서 추출한 판단 기준과 원칙들.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⊞</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --bg:#ffffff; --ink:#121212; --ink2:#363636; --ink3:#727272; --ink4:#a8a8a8;
+  --rule:#121212; --hairline:#e2e2e2; --hairline2:#efefef;
+  --accent:#0051c7; --mark:#fff3c4; --tabline:#121212;
+  --serif:"Noto Serif KR","Apple SD Gothic Neo",serif;
+  --sans:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121212; --ink:#ededed; --ink2:#cfcfcf; --ink3:#9a9a9a; --ink4:#6e6e6e;
+    --rule:#ededed; --hairline:#2e2e2e; --hairline2:#242424;
+    --accent:#7aa7ff; --mark:#4a3f12; --tabline:#ededed;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+
+/* Masthead */
+.masthead{text-align:center;padding:44px 0 0}
+.masthead .edition{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+.masthead h1{font-family:var(--serif);font-weight:700;font-size:clamp(34px,8vw,52px);letter-spacing:-.01em;margin:10px 0 8px;line-height:1.15}
+.masthead .dateline{font-size:13px;color:var(--ink3);margin:0 0 18px;font-variant-numeric:tabular-nums}
+.masthead .rules{border-top:3px solid var(--rule);border-bottom:1px solid var(--rule);height:5px;margin:0 0 18px}
+.standfirst{font-size:16px;line-height:1.75;color:var(--ink2);margin:0 auto 10px;max-width:560px;text-align:center;word-break:keep-all}
+
+/* Controls */
+.controls{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--hairline);padding:10px 0 0;margin-top:22px}
+.searchrow{display:flex;gap:8px;align-items:center;padding-bottom:10px}
+.search{flex:1;appearance:none;width:100%;padding:10px 14px;font-size:16px;font-family:var(--sans);border:1px solid var(--hairline);border-radius:8px;background:var(--bg);color:var(--ink);outline:none}
+.search::placeholder{color:var(--ink4)}
+.search:focus{border-color:var(--ink3)}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0 -20px;padding:0 20px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;appearance:none;background:none;border:none;border-bottom:2.5px solid transparent;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink3);padding:8px 10px 10px;cursor:pointer;white-space:nowrap}
+.tab .n{font-size:11px;color:var(--ink4);font-weight:500;margin-left:2px;font-variant-numeric:tabular-nums}
+.tab[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--tabline)}
+.count-live{font-size:12.5px;color:var(--ink3);padding:8px 0 0}
+
+/* Sections */
+main{padding:6px 0 30px}
+section.group{margin-top:40px}
+.group .ghead{border-top:1px solid var(--rule);padding-top:10px}
+.group h2{font-family:var(--sans);font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin:0;display:flex;align-items:baseline;gap:8px;color:var(--ink)}
+.group h2 .n{font-weight:600;color:var(--ink4);letter-spacing:0;font-size:12px}
+.group .gdesc{font-size:13.5px;color:var(--ink3);margin:6px 0 4px;word-break:keep-all}
+
+/* Entries */
+.entry{padding:24px 0;border-bottom:1px solid var(--hairline2)}
+.entry:last-child{border-bottom:none}
+.entry h3{font-family:var(--serif);font-weight:600;font-size:clamp(19px,4.6vw,22px);line-height:1.4;letter-spacing:-.005em;margin:0 0 6px;word-break:keep-all}
+.entry .meta{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink4);margin:0 0 10px;font-variant-numeric:tabular-nums}
+.entry .meta .sep{margin:0 6px;color:var(--hairline)}
+.entry p{font-size:16.5px;line-height:1.8;color:var(--ink2);margin:0;word-break:keep-all;overflow-wrap:break-word}
+mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
+
+.empty{color:var(--ink3);padding:56px 0;text-align:center;font-size:15px}
+
+footer{border-top:3px solid var(--rule);margin-top:44px;padding:18px 0 56px}
+footer p{margin:5px 0;font-size:13px;line-height:1.7;color:var(--ink3);word-break:keep-all}
+
+@media (max-width:480px){
+  .masthead{padding-top:30px}
+  .standfirst{font-size:15px;text-align:left}
+  .entry{padding:20px 0}
+  .entry p{font-size:16px;line-height:1.78}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="edition">Frame Dictionary</div>
+    <h1>프레임 사전</h1>
+    <p class="dateline" id="meta"></p>
+    <div class="rules"></div>
+    <p class="standfirst">박우범(위시켓 CEO)이 회의와 대화에서 세운 판단 기준과 원칙의 아카이브. 새 프레임이 등장한 날짜와 함께, 한 항목에 하나의 사고 도구를 담았습니다.</p>
+  </header>
+
+  <div class="controls">
+    <div class="searchrow">
+      <input class="search" id="q" type="search" placeholder="프레임 이름이나 내용으로 검색" autocomplete="off" aria-label="검색">
+    </div>
+    <nav class="tabs" id="tabs" aria-label="주제 필터"></nav>
+    <div class="count-live" id="live" hidden></div>
+  </div>
+
+  <main id="main"></main>
+  <div class="empty" id="empty" hidden>검색 결과가 없습니다.</div>
+
+  <footer>
+    <p>공개판입니다. 민감 항목을 제외했고, 내부 맥락 일부는 일반화해 적었습니다.</p>
+    <p>원 출처는 회의·대화 전사본에서 추출해 누적한 인사이트 로그입니다.</p>
+  </footer>
+</div>
+
+<script>
+const GDESC = {
+  "전략·시장 구조": "시장을 읽는 틀과 회사가 설 자리",
+  "제품·소프트웨어": "무엇을 소프트웨어로 만들고 무엇을 남길 것인가",
+  "재무·IR·에쿼티 스토리": "숫자와 서사로 자본시장을 상대하는 법",
+  "조직·보상": "조직을 움직이는 구조, 권한과 보상의 설계",
+  "채용·사람 보는 법": "사람을 고르고 판별하는 기준",
+  "고객·세일즈·콘텐츠": "고객에게 닿고 신뢰를 세우는 방식",
+  "실행·운영 방식": "속도, 실험, 결정이 증발하지 않게 하는 장치",
+  "철학·자기 관리": "판단의 바탕이 되는 개인 원칙"
+};
+let DATA = null, activeGroup = "전체", query = "";
+
+fetch("frames.json").then(r=>r.json()).then(d=>{ DATA=d; init(); });
+
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function hl(s,q){
+  const e = esc(s);
+  if(!q) return e;
+  try{ return e.replace(new RegExp("("+q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","gi"),"<mark>$1</mark>"); }
+  catch(_){ return e; }
+}
+
+function init(){
+  const dates = DATA.frames.map(f=>f.date).filter(Boolean).sort();
+  document.getElementById("meta").textContent =
+    `${DATA.frames.length}개 프레임 · ${dates[0]} ~ ${dates[dates.length-1]} 누적`;
+  const tabs = document.getElementById("tabs");
+  ["전체", ...DATA.groups].forEach(g=>{
+    const b=document.createElement("button");
+    b.className="tab"; b.type="button";
+    const n = g==="전체" ? DATA.frames.length : DATA.frames.filter(f=>f.group===g).length;
+    b.innerHTML = `${esc(g)}<span class="n">${n}</span>`;
+    b.setAttribute("aria-pressed", g===activeGroup);
+    b.onclick=()=>{ activeGroup=g; [...tabs.children].forEach(c=>c.setAttribute("aria-pressed", c===b)); render(); };
+    tabs.appendChild(b);
+  });
+  document.getElementById("q").addEventListener("input",e=>{ query=e.target.value.trim(); render(); });
+  render();
+}
+
+function render(){
+  const main=document.getElementById("main");
+  const q=query.toLowerCase();
+  let total=0; main.innerHTML="";
+  DATA.groups.forEach(g=>{
+    if(activeGroup!=="전체" && activeGroup!==g) return;
+    const items=DATA.frames.filter(f=>f.group===g && (!q || (f.name+" "+f.desc).toLowerCase().includes(q)))
+                           .sort((a,b)=>a.date.localeCompare(b.date));
+    if(!items.length) return;
+    total+=items.length;
+    const sec=document.createElement("section"); sec.className="group";
+    sec.innerHTML=`<div class="ghead"><h2>${esc(g)} <span class="n">${items.length}</span></h2><p class="gdesc">${esc(GDESC[g]||"")}</p></div>`;
+    items.forEach(f=>{
+      const a=document.createElement("article"); a.className="entry";
+      a.innerHTML=`<h3>${hl(f.name,query)}</h3><div class="meta">${esc(f.date)}<span class="sep">|</span>${esc(g)}</div><p>${hl(f.desc,query)}</p>`;
+      sec.appendChild(a);
+    });
+    main.appendChild(sec);
+  });
+  document.getElementById("empty").hidden = total>0;
+  const live=document.getElementById("live");
+  if(query||activeGroup!=="전체"){ live.hidden=false; live.textContent=`${total}개 표시 중`; }
+  else{ live.hidden=true; }
+}
+</script>
+</body>
+</html>
