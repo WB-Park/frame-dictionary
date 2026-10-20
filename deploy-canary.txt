@@ -1,0 +1,2 @@
+auto-deploy canary
+last check: 2026-10-20T16:xx KST (git integration test)
