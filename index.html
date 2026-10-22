@@ -52,6 +52,10 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-web
 .tab .n{font-size:11px;color:var(--ink4);font-weight:500;margin-left:2px;font-variant-numeric:tabular-nums}
 .tab[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--tabline)}
 .count-live{font-size:12.5px;color:var(--ink3);padding:8px 0 0}
+.sorts{display:flex;gap:6px;padding:0 0 10px}
+.sort{appearance:none;font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--ink3);background:none;border:1px solid var(--hairline);border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.sort[aria-pressed="true"]{color:var(--bg);background:var(--ink);border-color:var(--ink)}
+.entry .meta .refs{color:var(--ink3);font-weight:600}
 
 /* Sections */
 main{padding:6px 0 30px}
@@ -108,6 +112,11 @@ footer p{margin:5px 0;font-size:13px;line-height:1.7;color:var(--ink3);word-brea
       <input class="search" id="q" type="search" placeholder="프레임 이름이나 내용으로 검색" autocomplete="off" aria-label="검색">
       <button class="expandall" id="xall" type="button" aria-pressed="false">모두 펼치기</button>
     </div>
+    <div class="sorts" id="sorts" role="group" aria-label="정렬">
+      <button class="sort" type="button" data-mode="latest" aria-pressed="true">최신순</button>
+      <button class="sort" type="button" data-mode="refs" aria-pressed="false">많이 쓰인 순</button>
+      <button class="sort" type="button" data-mode="group" aria-pressed="false">주제별</button>
+    </div>
     <nav class="tabs" id="tabs" aria-label="주제 필터"></nav>
     <div class="count-live" id="live" hidden></div>
   </div>
@@ -132,7 +141,7 @@ const GDESC = {
   "실행·운영 방식": "속도, 실험, 결정이 증발하지 않게 하는 장치",
   "철학·자기 관리": "판단의 바탕이 되는 개인 원칙"
 };
-let DATA = null, activeGroup = "전체", query = "", allOpen = false;
+let DATA = null, activeGroup = "전체", query = "", allOpen = false, sortMode = "latest";
 const openSet = new Set();
 
 fetch("frames.json").then(r=>r.json()).then(d=>{ DATA=d; init(); });
@@ -160,6 +169,10 @@ function init(){
     tabs.appendChild(b);
   });
   document.getElementById("q").addEventListener("input",e=>{ query=e.target.value.trim(); render(); });
+  const sorts=document.getElementById("sorts");
+  [...sorts.children].forEach(b=>{
+    b.onclick=()=>{ sortMode=b.dataset.mode; [...sorts.children].forEach(c=>c.setAttribute("aria-pressed", c===b)); render(); };
+  });
   const xall=document.getElementById("xall");
   xall.onclick=()=>{
     allOpen=!allOpen; openSet.clear();
@@ -170,42 +183,63 @@ function init(){
   render();
 }
 
+function makeEntry(f, q){
+  const a=document.createElement("article"); a.className="entry";
+  const open = allOpen || openSet.has(f.name) || (q && (f.detail||"").toLowerCase().includes(q));
+  if(open) a.classList.add("open");
+  const refsBadge = (f.refs && f.refs>=2) ? `<span class="sep">|</span><span class="refs">언급 ${f.refs}회</span>` : ``;
+  a.innerHTML=
+    `<div class="ehead" role="button" tabindex="0" aria-expanded="${open}">`+
+    `<h3><span>${hl(f.name,query)}</span><span class="chev" aria-hidden="true">▼</span></h3>`+
+    `<div class="meta">${esc(f.date)}<span class="sep">|</span>${esc(f.group)}${refsBadge}</div>`+
+    `<p>${hl(f.desc,query)}</p>`+
+    (f.detail?`<div class="more">자세히 보기</div>`:``)+
+    `</div>`+
+    (f.detail?`<div class="detail"><span class="dlabel">풀어서 설명하면</span>${f.detail.split("\n\n").map(pp=>`<p>${hl(pp,query)}</p>`).join("")}</div>`:``);
+  const head=a.querySelector(".ehead");
+  const toggle=()=>{
+    const now=a.classList.toggle("open");
+    head.setAttribute("aria-expanded", now);
+    if(now) openSet.add(f.name); else { openSet.delete(f.name); }
+  };
+  head.onclick=toggle;
+  head.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggle(); } };
+  return a;
+}
+
 function render(){
   const main=document.getElementById("main");
   const q=query.toLowerCase();
   let total=0; main.innerHTML="";
-  DATA.groups.forEach(g=>{
-    if(activeGroup!=="전체" && activeGroup!==g) return;
-    const items=DATA.frames.filter(f=>f.group===g && (!q || (f.name+" "+f.desc+" "+(f.detail||"")).toLowerCase().includes(q)))
-                           .sort((a,b)=>a.date.localeCompare(b.date));
-    if(!items.length) return;
-    total+=items.length;
-    const sec=document.createElement("section"); sec.className="group";
-    sec.innerHTML=`<div class="ghead"><h2>${esc(g)} <span class="n">${items.length}</span></h2><p class="gdesc">${esc(GDESC[g]||"")}</p></div>`;
-    items.forEach(f=>{
-      const a=document.createElement("article"); a.className="entry";
-      const open = allOpen || openSet.has(f.name) || (q && (f.detail||"").toLowerCase().includes(q));
-      if(open) a.classList.add("open");
-      a.innerHTML=
-        `<div class="ehead" role="button" tabindex="0" aria-expanded="${open}">`+
-        `<h3><span>${hl(f.name,query)}</span><span class="chev" aria-hidden="true">▼</span></h3>`+
-        `<div class="meta">${esc(f.date)}<span class="sep">|</span>${esc(g)}</div>`+
-        `<p>${hl(f.desc,query)}</p>`+
-        (f.detail?`<div class="more">자세히 보기</div>`:``)+
-        `</div>`+
-        (f.detail?`<div class="detail"><span class="dlabel">풀어서 설명하면</span>${f.detail.split("\n\n").map(pp=>`<p>${hl(pp,query)}</p>`).join("")}</div>`:``);
-      const head=a.querySelector(".ehead");
-      const toggle=()=>{
-        const now=a.classList.toggle("open");
-        head.setAttribute("aria-expanded", now);
-        if(now) openSet.add(f.name); else { openSet.delete(f.name); if(allOpen){} }
-      };
-      head.onclick=toggle;
-      head.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggle(); } };
-      sec.appendChild(a);
+  const match=f=>(activeGroup==="전체"||f.group===activeGroup) && (!q || (f.name+" "+f.desc+" "+(f.detail||"")).toLowerCase().includes(q));
+  if(sortMode==="group"){
+    DATA.groups.forEach(g=>{
+      if(activeGroup!=="전체" && activeGroup!==g) return;
+      const items=DATA.frames.filter(f=>f.group===g && match(f)).sort((a,b)=>a.date.localeCompare(b.date));
+      if(!items.length) return;
+      total+=items.length;
+      const sec=document.createElement("section"); sec.className="group";
+      sec.innerHTML=`<div class="ghead"><h2>${esc(g)} <span class="n">${items.length}</span></h2><p class="gdesc">${esc(GDESC[g]||"")}</p></div>`;
+      items.forEach(f=>sec.appendChild(makeEntry(f,q)));
+      main.appendChild(sec);
     });
-    main.appendChild(sec);
-  });
+  } else {
+    const items=DATA.frames.filter(match).sort((a,b)=>{
+      if(sortMode==="refs"){
+        const r=(b.refs||1)-(a.refs||1);
+        if(r) return r;
+      }
+      return b.date.localeCompare(a.date) || a.name.localeCompare(b.name,"ko");
+    });
+    total=items.length;
+    if(items.length){
+      const sec=document.createElement("section"); sec.className="group";
+      const label = sortMode==="refs" ? "많이 쓰인 순 · 인사이트 로그 언급 횟수 기준" : "최신 등재순";
+      sec.innerHTML=`<div class="ghead"><h2>${sortMode==="refs"?"많이 쓰인 프레임":"최신 프레임"} <span class="n">${items.length}</span></h2><p class="gdesc">${label}</p></div>`;
+      items.forEach(f=>sec.appendChild(makeEntry(f,q)));
+      main.appendChild(sec);
+    }
+  }
   document.getElementById("empty").hidden = total>0;
   const live=document.getElementById("live");
   if(query||activeGroup!=="전체"){ live.hidden=false; live.textContent=`${total}개 표시 중`; }
