@@ -52,7 +52,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-web
 .tab .n{font-size:11px;color:var(--ink4);font-weight:500;margin-left:2px;font-variant-numeric:tabular-nums}
 .tab[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--tabline)}
 .count-live{font-size:12.5px;color:var(--ink3);padding:8px 0 0}
-.sorts{display:flex;gap:6px;padding:0 0 10px}
+.sorts{display:flex;gap:6px;padding:0 0 10px;flex-wrap:wrap}
 .sort{appearance:none;font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--ink3);background:none;border:1px solid var(--hairline);border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
 .sort[aria-pressed="true"]{color:var(--bg);background:var(--ink);border-color:var(--ink)}
 .entry .meta .refs{color:var(--ink3);font-weight:600}
@@ -115,6 +115,7 @@ footer p{margin:5px 0;font-size:13px;line-height:1.7;color:var(--ink3);word-brea
     <div class="sorts" id="sorts" role="group" aria-label="정렬">
       <button class="sort" type="button" data-mode="latest" aria-pressed="true">최신순</button>
       <button class="sort" type="button" data-mode="refs" aria-pressed="false">많이 쓰인 순</button>
+      <button class="sort" type="button" data-mode="recent" aria-pressed="false">최근 30일</button>
       <button class="sort" type="button" data-mode="group" aria-pressed="false">주제별</button>
     </div>
     <nav class="tabs" id="tabs" aria-label="주제 필터"></nav>
@@ -187,7 +188,8 @@ function makeEntry(f, q){
   const a=document.createElement("article"); a.className="entry";
   const open = allOpen || openSet.has(f.name) || (q && (f.detail||"").toLowerCase().includes(q));
   if(open) a.classList.add("open");
-  const refsBadge = (f.refs && f.refs>=2) ? `<span class="sep">|</span><span class="refs">언급 ${f.refs}회</span>` : ``;
+  let refsBadge = (f.refs && f.refs>=2) ? `<span class="sep">|</span><span class="refs">언급 ${f.refs}회</span>` : ``;
+  if(sortMode==="recent") refsBadge += `<span class="sep">|</span><span class="refs">최근 30일 ${f.refs30||0}회</span>`;
   a.innerHTML=
     `<div class="ehead" role="button" tabindex="0" aria-expanded="${open}">`+
     `<h3><span>${hl(f.name,query)}</span><span class="chev" aria-hidden="true">▼</span></h3>`+
@@ -229,13 +231,20 @@ function render(){
         const r=(b.refs||1)-(a.refs||1);
         if(r) return r;
       }
+      if(sortMode==="recent"){
+        const r=(b.refs30||0)-(a.refs30||0);
+        if(r) return r;
+        const r2=(b.refs||1)-(a.refs||1);
+        if(r2) return r2;
+      }
       return b.date.localeCompare(a.date) || a.name.localeCompare(b.name,"ko");
     });
     total=items.length;
     if(items.length){
       const sec=document.createElement("section"); sec.className="group";
-      const label = sortMode==="refs" ? "많이 쓰인 순 · 인사이트 로그 언급 횟수 기준" : "최신 등재순";
-      sec.innerHTML=`<div class="ghead"><h2>${sortMode==="refs"?"많이 쓰인 프레임":"최신 프레임"} <span class="n">${items.length}</span></h2><p class="gdesc">${label}</p></div>`;
+      const titles={latest:"최신 프레임",refs:"많이 쓰인 프레임",recent:"최근 30일에 많이 쓰인 프레임"};
+      const labels={latest:"최신 등재순",refs:"많이 쓰인 순 · 인사이트 로그 누적 언급 횟수 기준",recent:"최근 30일 언급 횟수 기준 · 오래된 프레임의 누적 우위를 보정한 정렬"};
+      sec.innerHTML=`<div class="ghead"><h2>${titles[sortMode]} <span class="n">${items.length}</span></h2><p class="gdesc">${labels[sortMode]}</p></div>`;
       items.forEach(f=>sec.appendChild(makeEntry(f,q)));
       main.appendChild(sec);
     }
